@@ -13,7 +13,7 @@ float  buf_to_numbers(char buf[]) {
             && buf[i] != '-' && buf[i] !='\n'){
                 const char msg[] = "error: invalid data\n";
                 write(STDOUT_FILENO, msg, sizeof(msg));
-                exit(EXIT_FAILURE);
+                return 1;
         }
         if (buf[i] == ' '){
             n = 10;
@@ -32,7 +32,7 @@ float  buf_to_numbers(char buf[]) {
             else if (num2 == 0 && first_flag == 1){
                 const char msg[] = "error: can`t devide by zero\n";
                 write(STDOUT_FILENO, msg, sizeof(msg));
-                exit(EXIT_FAILURE);
+                return 1;
             }
             num2 = 0;
         }
@@ -53,7 +53,7 @@ float  buf_to_numbers(char buf[]) {
             else if (num2 == 0 && first_flag == 1){
                 const char msg[] = "error: can`t devide by zero\n";
                 write(STDOUT_FILENO, msg, sizeof(msg));
-                exit(EXIT_FAILURE);
+                return 1;
             }
             num2 = 0;
             break;
@@ -97,7 +97,9 @@ int main(int argc, char **argv) {
 		}
 
         float result = buf_to_numbers(buf);
+        if (result != ){
         bytes = sprintf(buf, "%.4f\n", result);
+        
 		{
 			int32_t written = write(file, buf, bytes);
 			if (written != bytes) {
@@ -108,6 +110,7 @@ int main(int argc, char **argv) {
 		}
         const char msg[] = "success";
         write(STDOUT_FILENO, msg, sizeof(msg));
+    }
 	}
 	if (bytes == 0) {
 		const char term = '\0';

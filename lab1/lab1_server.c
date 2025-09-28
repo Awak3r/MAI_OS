@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
-
 float  buf_to_numbers(char buf[]) {
     float n = 10, num2 = 0, result;
     int num_path, i = 0, flag = 0, min_flag = 0, first_flag = 0;
@@ -19,10 +18,6 @@ float  buf_to_numbers(char buf[]) {
         if (buf[i] == ' '){
             n = 10;
             flag = 0;
-            if (num2 == 0 && first_flag == 1){
-                const char msg[] = "error: can`t devide by zero";
-                write(STDOUT_FILENO, msg, sizeof(msg));
-            }
             if (min_flag == 1){
                 num2 *= -1;
             }
@@ -35,13 +30,13 @@ float  buf_to_numbers(char buf[]) {
                 result /= num2;
             }
             else if (num2 == 0 && first_flag == 1){
-                const char msg[] = "error: can`t devide by zero";
+                const char msg[] = "error: can`t devide by zero\n";
                 write(STDOUT_FILENO, msg, sizeof(msg));
                 exit(EXIT_FAILURE);
             }
             num2 = 0;
         }
-        else if (buf[i] == '\n'){
+        else if (buf[i] == '\n' || buf[i] == '\0'){
             n = 10;
             flag = 0;
             if (min_flag == 1){
@@ -56,7 +51,7 @@ float  buf_to_numbers(char buf[]) {
                 result /= num2;
             }
             else if (num2 == 0 && first_flag == 1){
-                const char msg[] = "error: can`t devide by zero";
+                const char msg[] = "error: can`t devide by zero\n";
                 write(STDOUT_FILENO, msg, sizeof(msg));
                 exit(EXIT_FAILURE);
             }
@@ -90,27 +85,29 @@ int main(int argc, char **argv) {
 	int32_t file = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (file == -1) {
 		const char msg[] = "error: failed to open requested file\n";
-	    write(STDERR_FILENO, msg, sizeof(msg));
+	    write(STDOUT_FILENO, msg, sizeof(msg));
 		exit(EXIT_FAILURE);
 	}
 
 	while ((bytes = read(STDIN_FILENO, buf, sizeof(buf)))) {
 		if (bytes < 0) {
 			const char msg[] = "error: failed to read from stdin\n";
-			write(STDERR_FILENO, msg, sizeof(msg));
+			write(STDOUT_FILENO, msg, sizeof(msg));
 			exit(EXIT_FAILURE);
 		}
 
         float result = buf_to_numbers(buf);
-        bytes = sprintf(buf, "%.2f\n", result);
+        bytes = sprintf(buf, "%.4f\n", result);
 		{
 			int32_t written = write(file, buf, bytes);
 			if (written != bytes) {
 				const char msg[] = "error: failed to write to file\n";
-				write(STDERR_FILENO, msg, sizeof(msg));
+				write(STDOUT_FILENO, msg, sizeof(msg));
 				exit(EXIT_FAILURE);
 			}       
 		}
+        const char msg[] = "success";
+        write(STDOUT_FILENO, msg, sizeof(msg));
 	}
 	if (bytes == 0) {
 		const char term = '\0';

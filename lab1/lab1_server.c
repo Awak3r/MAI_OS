@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdio.h>
 float  buf_to_numbers(char buf[]) {
     float n = 10, num2 = 0, result;
     int num_path, i = 0, flag = 0, min_flag = 0, first_flag = 0;
@@ -96,7 +97,7 @@ int main(int argc, char **argv) {
 		}
 
         float result = buf_to_numbers(buf);
-        bytes = sprintf(buf, "%.4f\n", result);
+        bytes = snprintf(buf, sizeof(buf), "%.4f\n", result);
 		{
 			int32_t written = write(file, buf, bytes);
 			if (written != bytes) {

@@ -4,13 +4,13 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 static char SERVER_PROGRAM_NAME[] = "lab1_server";
 
 int main(int argc, char **argv) {
 	char filename[256];
-	fgets(filename, sizeof(filename), stdin);
+	ssize_t bytes_read;
+    bytes_read = read(STDIN_FILENO, filename, sizeof(filename) - 1);
 	filename[strcspn(filename, "\n")] = '\0';
 	char progpath[1024];
 	{
@@ -58,7 +58,9 @@ int main(int argc, char **argv) {
 		close(server_to_client[1]);
 		{
 			char path[1024];
-			snprintf(path, sizeof(path) - 1, "%s/%s", progpath, SERVER_PROGRAM_NAME);
+			strcpy(path, progpath);
+    	strcat(path, "/");
+    	strcat(path, SERVER_PROGRAM_NAME);
 			char *const args[] = {SERVER_PROGRAM_NAME, filename, NULL};
 			int32_t status = execv(path, args);
 			if (status == -1) {
@@ -86,6 +88,7 @@ int main(int argc, char **argv) {
 			if ((err_bytes = read(server_to_client[0], err_buf, sizeof(err_buf)))){
 				if (err_buf[0] == 'e'){
 				write(STDOUT_FILENO, err_buf, err_bytes);
+				exit(EXIT_FAILURE);
 				}
 			}
 		

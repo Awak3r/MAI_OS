@@ -74,11 +74,7 @@ int main(int argc, char ** argv){
             flag = 2;
         }
     }
-    if (flag == 0){
-        fprintf(stderr, "error: specify --max-threads or --force-threads\n");
-        return -1;
-    }
-    if (max_threads < 1){
+    if (flag != 0 && max_threads < 1){
         fprintf(stderr, "error: need at least 1 thread\n");
         return -1;
     }
@@ -87,7 +83,7 @@ int main(int argc, char ** argv){
         n_threads = max_threads;
     } else{
         n_threads = sysconf(_SC_NPROCESSORS_ONLN);
-        if (n_threads > (size_t)max_threads) n_threads = max_threads;
+        if (flag != 0 && n_threads > max_threads) n_threads = max_threads;
     }
     if (n_threads == 0){
         fprintf(stderr, "error: cant realize multithreading with 0 threads\n");
